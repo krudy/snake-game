@@ -4,6 +4,16 @@ import time
 
 SIZE = 40
 
+class Food:
+    def __init__(self, parent_screen):
+        self.image = pygame.image.load("resources/mouse.png").convert()
+        self.parent_screen = parent_screen
+        self.x = SIZE * 3
+        self.y = SIZE * 3
+    
+    def draw(self):
+        self.parent_screen.blit(self.image, (self.x, self.y)) 
+        pygame.display.flip()    
 
 class Snake:
     def __init__(self, parent_screen, length):
@@ -15,7 +25,7 @@ class Snake:
         self.direction = 'down'
         
     def draw(self):
-        self.parent_screen.fill((110, 110, 5))
+        self.parent_screen.fill((0, 0, 0))
         for i in range(self.length):
             self.parent_screen.blit(self.block, (self.x[i], self.y[i])) 
         pygame.display.flip()
@@ -52,11 +62,17 @@ class Game:
     def __init__(self):            
         pygame.init()  
         self.board = pygame.display.set_mode((1200, 800))
-        self.board.fill((110, 110, 5))
-        self.snake = Snake(self.board, 6)
+        self.board.fill((0, 0, 0))
+        self.snake = Snake(self.board, 5)
         self.snake.draw()
-
-
+        self.food = Food(self.board)
+        self.food.draw()
+        
+    def play(self):
+        self.snake.walk()
+        self.food.draw()
+        
+        
     def run(self):
         running = True
 
@@ -80,7 +96,7 @@ class Game:
                 if event.type == QUIT:
                     running = False   
 
-            self.snake.walk()
+            self.play()
             time.sleep(0.2)
             
 if __name__ == '__main__':
