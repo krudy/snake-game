@@ -19,8 +19,8 @@ class Food:
         pygame.display.flip()   
         
     def move(self):
-        self.x = random.randint(0, 30) * SIZE
-        self.y = random.randint(0, 20) * SIZE
+        self.x = random.randint(0, 29) * SIZE
+        self.y = random.randint(0, 19) * SIZE
 
 class Snake:
     def __init__(self, parent_screen, length):
@@ -83,14 +83,22 @@ class Game:
     def play(self):
         self.snake.walk()
         self.food.draw()
+        self.display_score()
+        pygame.display.flip()
         
         if self.is_collision(self.snake.x[0], self.snake.y[0], self.food.x, self.food.y):
             self.snake.increase_length()
             self.food.move()
+            
+    def display_score(self):
+        font = pygame.font.Font(None, 30)
+        text = font.render("Score: " + str(self.snake.length), True, (255, 255, 255))
+        self.board.blit(text, (10, 10))
+        pygame.display.flip()
        
     def is_collision(self, x1, y1, x2, y2):
-        if x1 >= x2 and x1 <= x2 + SIZE:
-            if y1 >= y2 and y1 <= y2 + SIZE:
+        if x1 >= x2 and x1 < x2 + SIZE:
+            if y1 >= y2 and y1 < y2 + SIZE:
                 return True
         return False
         
