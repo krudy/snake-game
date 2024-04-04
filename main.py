@@ -1,8 +1,11 @@
 import pygame
 from pygame.locals import *
 import time
+import random
 
 SIZE = 40
+
+
 
 class Food:
     def __init__(self, parent_screen):
@@ -13,7 +16,11 @@ class Food:
     
     def draw(self):
         self.parent_screen.blit(self.image, (self.x, self.y)) 
-        pygame.display.flip()    
+        pygame.display.flip()   
+        
+    def move(self):
+        self.x = random.randint(0, 30) * SIZE
+        self.y = random.randint(0, 20) * SIZE
 
 class Snake:
     def __init__(self, parent_screen, length):
@@ -29,6 +36,11 @@ class Snake:
         for i in range(self.length):
             self.parent_screen.blit(self.block, (self.x[i], self.y[i])) 
         pygame.display.flip()
+        
+    def increase_length(self):
+        self.length += 1
+        self.x.append(-1)
+        self.y.append(-1)
         
     def move_left(self):
         self.direction = 'left'
@@ -72,6 +84,15 @@ class Game:
         self.snake.walk()
         self.food.draw()
         
+        if self.is_collision(self.snake.x[0], self.snake.y[0], self.food.x, self.food.y):
+            self.snake.increase_length()
+            self.food.move()
+       
+    def is_collision(self, x1, y1, x2, y2):
+        if x1 >= x2 and x1 <= x2 + SIZE:
+            if y1 >= y2 and y1 <= y2 + SIZE:
+                return True
+        return False
         
     def run(self):
         running = True
@@ -97,7 +118,7 @@ class Game:
                     running = False   
 
             self.play()
-            time.sleep(0.2)
+            time.sleep(0.1)
             
 if __name__ == '__main__':
     
