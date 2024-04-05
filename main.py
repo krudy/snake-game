@@ -75,7 +75,7 @@ class Game:
         pygame.init()  
         self.board = pygame.display.set_mode((1200, 800))
         self.board.fill((0, 0, 0))
-        self.snake = Snake(self.board, 5)
+        self.snake = Snake(self.board, 33)
         self.snake.draw()
         self.food = Food(self.board)
         self.food.draw()
@@ -86,13 +86,19 @@ class Game:
         self.display_score()
         pygame.display.flip()
         
+        # checking if food has been found
         if self.is_collision(self.snake.x[0], self.snake.y[0], self.food.x, self.food.y):
             self.snake.increase_length()
             self.food.move()
             
+        # checking if the snake is trying to eat itself 
+        for i in range(3, self.snake.length):
+            if self.is_collision(self.snake.x[0], self.snake.y[0], self.snake.x[i], self.snake.y[i]): 
+                raise "GAME OVER"
+            
     def display_score(self):
         font = pygame.font.Font(None, 30)
-        text = font.render("Score: " + str(self.snake.length), True, (255, 255, 255))
+        text = font.render("Score: " + str(self.snake.length - 3), True, (255, 255, 255))
         self.board.blit(text, (10, 10))
         pygame.display.flip()
        
@@ -101,9 +107,21 @@ class Game:
             if y1 >= y2 and y1 < y2 + SIZE:
                 return True
         return False
+    
+    def game_over(self):
+         self.board.fill((0, 0, 0)) 
+         font = pygame.font.SysFont('Helvetica',40)
+         line1 = font.render('Game Over', True, (255, 10, 5))
+         line2 = font.render('Press Enter to play again', True, (255, 255, 255))
+         line3 = font.render(f'You have scored {self.snake.length - 1} points', True, (255, 255, 255))
+         self.board.blit(line1, (500,300))
+         self.board.blit(line2, (400,370))
+         self.board.blit(line3, (400,440))
+         pygame.display.flip()
         
     def run(self):
         running = True
+        pause = False
 
         while running:
             for event in pygame.event.get():
@@ -124,8 +142,13 @@ class Game:
                         
                 if event.type == QUIT:
                     running = False   
-
-            self.play()
+            try:    
+                if not pause:
+                    self.play()
+            except Exception as e:
+                self.game_over()
+                pause = True
+            
             time.sleep(0.1)
             
 if __name__ == '__main__':
